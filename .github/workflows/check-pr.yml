@@ -1,0 +1,34 @@
+name: Check PR Requirements
+
+on:
+  pull_request:
+
+jobs:
+  check-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install dependencies
+        run: |
+          npm install axios
+
+      - name: Get root directory
+        run: node .github/scripts/get_root_directories.js
+        id: get-dir
+
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.21'
+
+      - name: Build Go Project in New Directory
+        run: |
+          cd ${{ steps.get-dir.outputs.root_directory }}
+          go build
